@@ -130,6 +130,6 @@ FLUSH PRIVILEGES;
 - [x] 프로젝트 초기 설정 (Spring Boot, MySQL 연동)
 - [x] 3-tier + DDD 패키지 구조 설계
 - [x] 도메인 모델 구현 (6개 바운디드 컨텍스트)
-- [ ] Application 레이어 (유스케이스 서비스)
-- [ ] Data 레이어 (JPA Entity, Repository 구현체)
+- [x] Application 레이어 (유스케이스 서비스)
+- [x] Data 레이어 (JPA Entity, Repository 구현체)
 - [ ] Presentation 레이어 (Controller, DTO)
