@@ -5,6 +5,7 @@ import com.kb.wmslab.goods_wms.business.domain.inventory.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,5 +23,12 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     public Optional<Inventory> findByWarehouseIdAndZoneIdAndProductId(Long warehouseId, Long zoneId, Long productId) {
         return jpaRepository.findByWarehouseIdAndZoneIdAndProductId(warehouseId, zoneId, productId)
                 .map(InventoryJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<Inventory> findAllByWarehouseId(Long warehouseId) {
+        return jpaRepository.findAllByWarehouseId(warehouseId).stream()
+                .map(InventoryJpaEntity::toDomain)
+                .toList();
     }
 }
