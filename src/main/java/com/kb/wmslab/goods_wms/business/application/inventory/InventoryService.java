@@ -1,6 +1,6 @@
 package com.kb.wmslab.goods_wms.business.application.inventory;
 
-import com.kb.wmslab.goods_wms.business.domain.common.exception.EntityNotFoundException;
+import com.kb.wmslab.goods_wms.business.domain.common.exception.InventoryNotFoundException;
 import com.kb.wmslab.goods_wms.business.domain.inventory.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class InventoryService implements InventoryUseCase {
         return inventoryRepository
                 .findByWarehouseIdAndZoneIdAndProductId(warehouseId, zoneId, productId)
                 .map(InventoryResult::from)
-                .orElseThrow(() -> new EntityNotFoundException("Inventory", productId));
+                .orElseThrow(() -> new InventoryNotFoundException(warehouseId, zoneId, productId));
     }
 
     @Override

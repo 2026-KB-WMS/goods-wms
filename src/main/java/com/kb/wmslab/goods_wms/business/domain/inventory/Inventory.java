@@ -6,6 +6,11 @@ import lombok.Getter;
 @Getter
 public class Inventory {
 
+    private static final String INVALID_INCREASE_QUANTITY = "증가 수량은 0보다 커야 합니다.";
+    private static final String INVALID_DECREASE_QUANTITY = "차감 수량은 0보다 커야 합니다.";
+    private static final String INVALID_RESERVE_QUANTITY = "예약 수량은 0보다 커야 합니다.";
+    private static final String INVALID_RELEASE_QUANTITY = "예약 해제 수량은 0보다 커야 합니다.";
+
     private final Long id;
     private final Long warehouseId;
     private final Long zoneId;
@@ -44,35 +49,35 @@ public class Inventory {
     }
 
     public void increaseNormal(int quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException("증가 수량은 0보다 커야 합니다.");
+        if (quantity <= 0) throw new IllegalArgumentException(INVALID_INCREASE_QUANTITY);
         this.normalQuantity += quantity;
     }
 
     public void increaseDamaged(int quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException("증가 수량은 0보다 커야 합니다.");
+        if (quantity <= 0) throw new IllegalArgumentException(INVALID_INCREASE_QUANTITY);
         this.damagedQuantity += quantity;
     }
 
     public void increasePendingInspection(int quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException("증가 수량은 0보다 커야 합니다.");
+        if (quantity <= 0) throw new IllegalArgumentException(INVALID_INCREASE_QUANTITY);
         this.pendingInspectionQuantity += quantity;
     }
 
     public void decreaseNormal(int quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException("차감 수량은 0보다 커야 합니다.");
+        if (quantity <= 0) throw new IllegalArgumentException(INVALID_DECREASE_QUANTITY);
         int available = getAvailableQuantity();
         if (available < quantity) throw new InsufficientStockException(quantity, available);
         this.normalQuantity -= quantity;
     }
 
     public void reserve(int quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException("예약 수량은 0보다 커야 합니다.");
+        if (quantity <= 0) throw new IllegalArgumentException(INVALID_RESERVE_QUANTITY);
         if (getAvailableQuantity() < quantity) throw new InsufficientStockException(quantity, getAvailableQuantity());
         this.reservedQuantity += quantity;
     }
 
     public void releaseReservation(int quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException("예약 해제 수량은 0보다 커야 합니다.");
+        if (quantity <= 0) throw new IllegalArgumentException(INVALID_RELEASE_QUANTITY);
         this.reservedQuantity = Math.max(0, this.reservedQuantity - quantity);
     }
 }
