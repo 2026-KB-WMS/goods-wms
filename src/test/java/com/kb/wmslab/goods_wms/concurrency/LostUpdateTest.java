@@ -6,12 +6,14 @@ import com.kb.wmslab.goods_wms.business.domain.member.MemberRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +24,7 @@ class LostUpdateTest {
     private MemberRepository memberRepository;
 
     @Test
-    void 동시_수정시_한쪽_변경이_예외_없이_유실된다() throws InterruptedException {
+    void 동시_수정시_충돌이_감지되어_OptimisticLockingFailureException이_발생한다() throws InterruptedException {
         // given
         Member saved = memberRepository.save(Member.create("홍길동", "concurrent@test.com", MemberRole.ADMIN));
         Long id = saved.getId();
@@ -32,6 +34,7 @@ class LostUpdateTest {
         CountDownLatch startLatch = new CountDownLatch(1);
         AtomicInteger exceptionCount = new AtomicInteger(0);
         AtomicInteger writeOrder = new AtomicInteger(0);
+        AtomicReference<Class<? extends Exception>> caughtExceptionType = new AtomicReference<>();
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -47,7 +50,8 @@ class LostUpdateTest {
                 System.out.println("[스레드 A] 저장 완료 (쓰기 순서 " + order + "번째) - role=" + MemberRole.WAREHOUSE_MANAGER);
             } catch (Exception e) {
                 exceptionCount.incrementAndGet();
-                System.out.println("[스레드 A] 예외 발생 - " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                caughtExceptionType.set(e.getClass());
+                System.out.println("[스레드 A] 예외 발생 - " + e.getClass().getSimpleName());
             }
         });
 
@@ -63,7 +67,8 @@ class LostUpdateTest {
                 System.out.println("[스레드 B] 저장 완료 (쓰기 순서 " + order + "번째) - role=" + MemberRole.OUTBOUND_HANDLER);
             } catch (Exception e) {
                 exceptionCount.incrementAndGet();
-                System.out.println("[스레드 B] 예외 발생 - " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                caughtExceptionType.set(e.getClass());
+                System.out.println("[스레드 B] 예외 발생 - " + e.getClass().getSimpleName());
             }
         });
 
@@ -76,23 +81,25 @@ class LostUpdateTest {
 
         Member result = memberRepository.findById(id).orElseThrow();
         System.out.println("\n[최종 상태] role=" + result.getRole());
-        System.out.println("[예외 발생 수] " + exceptionCount.get() + " (0이면 Lost Update 발생)");
+        System.out.println("[예외 발생 수] " + exceptionCount.get());
 
-        // then: 두 요청 모두 예외 없이 성공했지만 한 쪽 변경이 유실됨
-        assertThat(exceptionCount.get()).isEqualTo(0);
+        // then: 한 요청은 성공, 다른 요청은 충돌을 감지하여 예외 발생
+        assertThat(exceptionCount.get()).isEqualTo(1);
+        assertThat(caughtExceptionType.get()).isEqualTo(ObjectOptimisticLockingFailureException.class);
     }
 }
 
 /**
  * [초기 상태] id=1, role=ADMIN
+ *
  * [스레드 A] 읽기 완료 - role=ADMIN
  * [스레드 B] 읽기 완료 - role=ADMIN
  *
  * [두 스레드 모두 읽기 완료 → 동시 쓰기 시작]
  *
  * [스레드 B] 저장 완료 (쓰기 순서 1번째) - role=OUTBOUND_HANDLER
- * [스레드 A] 저장 완료 (쓰기 순서 2번째) - role=WAREHOUSE_MANAGER
+ * [스레드 A] 예외 발생 - ObjectOptimisticLockingFailureException
  *
- * [최종 상태] role=WAREHOUSE_MANAGER
- * [예외 발생 수] 0 (0이면 Lost Update 발생)
+ * [최종 상태] role=OUTBOUND_HANDLER
+ * [예외 발생 수] 1
  */
