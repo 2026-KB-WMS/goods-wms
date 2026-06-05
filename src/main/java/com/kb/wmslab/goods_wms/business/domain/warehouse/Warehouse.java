@@ -17,24 +17,26 @@ public class Warehouse {
     private WarehouseStatus status;
     private final List<WarehouseZone> zones;
     private final LocalDateTime createdAt;
+    private final Long version;
 
     private Warehouse(Long id, String name, String address, WarehouseStatus status,
-                      List<WarehouseZone> zones, LocalDateTime createdAt) {
+                      List<WarehouseZone> zones, LocalDateTime createdAt, Long version) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.status = status;
         this.zones = new ArrayList<>(zones);
         this.createdAt = createdAt;
+        this.version = version;
     }
 
     public static Warehouse create(String name, String address) {
-        return new Warehouse(null, name, address, WarehouseStatus.ACTIVE, List.of(), LocalDateTime.now());
+        return new Warehouse(null, name, address, WarehouseStatus.ACTIVE, List.of(), LocalDateTime.now(), null);
     }
 
     public static Warehouse reconstitute(Long id, String name, String address, WarehouseStatus status,
-                                          List<WarehouseZone> zones, LocalDateTime createdAt) {
-        return new Warehouse(id, name, address, status, zones, createdAt);
+                                          List<WarehouseZone> zones, LocalDateTime createdAt, Long version) {
+        return new Warehouse(id, name, address, status, zones, createdAt, version);
     }
 
     public void activate() {

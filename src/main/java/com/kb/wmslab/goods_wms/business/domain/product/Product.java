@@ -18,10 +18,11 @@ public class Product {
     private ProductType productType;
     private ProductStatus status;
     private final LocalDateTime createdAt;
+    private final Long version;
 
     private Product(Long id, String sku, String name, String characterName, String seriesName,
                     String edition, boolean limitedEdition, ProductType productType,
-                    ProductStatus status, LocalDateTime createdAt) {
+                    ProductStatus status, LocalDateTime createdAt, Long version) {
         this.id = id;
         this.sku = sku;
         this.name = name;
@@ -32,19 +33,21 @@ public class Product {
         this.productType = productType;
         this.status = status;
         this.createdAt = createdAt;
+        this.version = version;
     }
 
     public static Product create(String sku, String name, String characterName, String seriesName,
                                   String edition, boolean limitedEdition, ProductType productType) {
         return new Product(null, sku, name, characterName, seriesName, edition, limitedEdition,
-                productType, ProductStatus.ACTIVE, LocalDateTime.now());
+                productType, ProductStatus.ACTIVE, LocalDateTime.now(), null);
     }
 
     public static Product reconstitute(Long id, String sku, String name, String characterName,
                                         String seriesName, String edition, boolean limitedEdition,
-                                        ProductType productType, ProductStatus status, LocalDateTime createdAt) {
+                                        ProductType productType, ProductStatus status,
+                                        LocalDateTime createdAt, Long version) {
         return new Product(id, sku, name, characterName, seriesName, edition, limitedEdition,
-                productType, status, createdAt);
+                productType, status, createdAt, version);
     }
 
     public void activate() {

@@ -14,22 +14,26 @@ public class Member {
     private MemberRole role;
     private MemberStatus status;
     private final LocalDateTime createdAt;
+    private final Long version;
 
-    private Member(Long id, String name, String email, MemberRole role, MemberStatus status, LocalDateTime createdAt) {
+    private Member(Long id, String name, String email, MemberRole role, MemberStatus status,
+                   LocalDateTime createdAt, Long version) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
         this.status = status;
         this.createdAt = createdAt;
+        this.version = version;
     }
 
     public static Member create(String name, String email, MemberRole role) {
-        return new Member(null, name, email, role, MemberStatus.ACTIVE, LocalDateTime.now());
+        return new Member(null, name, email, role, MemberStatus.ACTIVE, LocalDateTime.now(), null);
     }
 
-    public static Member reconstitute(Long id, String name, String email, MemberRole role, MemberStatus status, LocalDateTime createdAt) {
-        return new Member(id, name, email, role, status, createdAt);
+    public static Member reconstitute(Long id, String name, String email, MemberRole role,
+                                      MemberStatus status, LocalDateTime createdAt, Long version) {
+        return new Member(id, name, email, role, status, createdAt, version);
     }
 
     public void activate() {

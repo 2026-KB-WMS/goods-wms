@@ -19,10 +19,11 @@ public class Outbound {
     private OutboundStatus status;
     private final List<OutboundLine> lines;
     private final LocalDateTime createdAt;
+    private final Long version;
 
     private Outbound(Long id, Long warehouseId, Long handlerId, String destination,
                      OutboundPurpose purpose, OutboundStatus status,
-                     List<OutboundLine> lines, LocalDateTime createdAt) {
+                     List<OutboundLine> lines, LocalDateTime createdAt, Long version) {
         this.id = id;
         this.warehouseId = warehouseId;
         this.handlerId = handlerId;
@@ -31,17 +32,18 @@ public class Outbound {
         this.status = status;
         this.lines = new ArrayList<>(lines);
         this.createdAt = createdAt;
+        this.version = version;
     }
 
     public static Outbound create(Long warehouseId, Long handlerId, String destination, OutboundPurpose purpose) {
         return new Outbound(null, warehouseId, handlerId, destination, purpose,
-                OutboundStatus.CREATED, List.of(), LocalDateTime.now());
+                OutboundStatus.CREATED, List.of(), LocalDateTime.now(), null);
     }
 
     public static Outbound reconstitute(Long id, Long warehouseId, Long handlerId, String destination,
                                          OutboundPurpose purpose, OutboundStatus status,
-                                         List<OutboundLine> lines, LocalDateTime createdAt) {
-        return new Outbound(id, warehouseId, handlerId, destination, purpose, status, lines, createdAt);
+                                         List<OutboundLine> lines, LocalDateTime createdAt, Long version) {
+        return new Outbound(id, warehouseId, handlerId, destination, purpose, status, lines, createdAt, version);
     }
 
     public void addLine(OutboundLine line) {

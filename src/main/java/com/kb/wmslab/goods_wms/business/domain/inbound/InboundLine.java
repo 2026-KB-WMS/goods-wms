@@ -12,9 +12,10 @@ public class InboundLine {
     private int damagedQuantity;
     private int pendingInspectionQuantity;
     private boolean inspected;
+    private final Long version;
 
     private InboundLine(Long id, Long productId, int orderedQuantity, int normalQuantity,
-                        int damagedQuantity, int pendingInspectionQuantity, boolean inspected) {
+                        int damagedQuantity, int pendingInspectionQuantity, boolean inspected, Long version) {
         this.id = id;
         this.productId = productId;
         this.orderedQuantity = orderedQuantity;
@@ -22,17 +23,18 @@ public class InboundLine {
         this.damagedQuantity = damagedQuantity;
         this.pendingInspectionQuantity = pendingInspectionQuantity;
         this.inspected = inspected;
+        this.version = version;
     }
 
     public static InboundLine create(Long productId, int orderedQuantity) {
-        return new InboundLine(null, productId, orderedQuantity, 0, 0, 0, false);
+        return new InboundLine(null, productId, orderedQuantity, 0, 0, 0, false, null);
     }
 
     public static InboundLine reconstitute(Long id, Long productId, int orderedQuantity,
                                             int normalQuantity, int damagedQuantity,
-                                            int pendingInspectionQuantity, boolean inspected) {
+                                            int pendingInspectionQuantity, boolean inspected, Long version) {
         return new InboundLine(id, productId, orderedQuantity, normalQuantity,
-                damagedQuantity, pendingInspectionQuantity, inspected);
+                damagedQuantity, pendingInspectionQuantity, inspected, version);
     }
 
     public void recordInspectionResult(int normalQuantity, int damagedQuantity, int pendingInspectionQuantity) {
