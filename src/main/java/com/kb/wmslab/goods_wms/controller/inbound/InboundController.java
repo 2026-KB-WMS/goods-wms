@@ -5,6 +5,7 @@ import com.kb.wmslab.goods_wms.business.application.inbound.InboundResult;
 import com.kb.wmslab.goods_wms.business.application.inbound.InboundUseCase;
 import com.kb.wmslab.goods_wms.controller.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class InboundController {
     private final InboundUseCase inboundUseCase;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<InboundResult>> create(@RequestBody InboundRequest.CreateInboundRequest request) {
+    public ResponseEntity<ApiResponse<InboundResult>> create(@Valid @RequestBody InboundRequest.CreateInboundRequest request) {
         InboundResult result = inboundUseCase.createInbound(
                 new InboundCommand.CreateInbound(request.warehouseId(), request.handlerId(), request.supplierName())
         );
@@ -28,7 +29,7 @@ public class InboundController {
     @PostMapping("/{id}/lines")
     public ResponseEntity<ApiResponse<InboundResult>> addLine(
             @PathVariable Long id,
-            @RequestBody InboundRequest.AddLineRequest request) {
+            @Valid @RequestBody InboundRequest.AddLineRequest request) {
         InboundResult result = inboundUseCase.addLine(id,
                 new InboundCommand.AddLine(request.productId(), request.orderedQuantity())
         );
@@ -46,7 +47,7 @@ public class InboundController {
     public ResponseEntity<ApiResponse<InboundResult>> recordLineInspection(
             @PathVariable Long inboundId,
             @PathVariable Long lineId,
-            @RequestBody InboundRequest.RecordInspectionRequest request) {
+            @Valid @RequestBody InboundRequest.RecordInspectionRequest request) {
         InboundResult result = inboundUseCase.recordLineInspection(inboundId,
                 new InboundCommand.RecordInspection(lineId, request.normalQuantity(), request.damagedQuantity(), request.pendingInspectionQuantity())
         );

@@ -5,6 +5,7 @@ import com.kb.wmslab.goods_wms.business.application.product.ProductResult;
 import com.kb.wmslab.goods_wms.business.application.product.ProductUseCase;
 import com.kb.wmslab.goods_wms.controller.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class ProductController {
     private final ProductUseCase productUseCase;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ProductResult>> register(@RequestBody ProductRequest.RegisterRequest request) {
+    public ResponseEntity<ApiResponse<ProductResult>> register(@Valid @RequestBody ProductRequest.RegisterRequest request) {
         ProductResult result = productUseCase.registerProduct(
                 new ProductCommand.Register(
                         request.sku(), request.name(), request.characterName(), request.seriesName(),
