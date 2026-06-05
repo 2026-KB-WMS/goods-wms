@@ -15,6 +15,9 @@ public class OutboundLineJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outbound_id", nullable = false)
     private OutboundJpaEntity outbound;
@@ -31,10 +34,11 @@ public class OutboundLineJpaEntity {
     public static OutboundLineJpaEntity from(OutboundLine line, OutboundJpaEntity outbound) {
         OutboundLineJpaEntity entity = new OutboundLineJpaEntity(outbound, line.getProductId(), line.getQuantity());
         entity.id = line.getId();
+        entity.version = line.getVersion();
         return entity;
     }
 
     public OutboundLine toDomain() {
-        return OutboundLine.reconstitute(id, productId, quantity);
+        return OutboundLine.reconstitute(id, productId, quantity, version);
     }
 }

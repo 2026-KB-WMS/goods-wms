@@ -16,6 +16,9 @@ public class WarehouseZoneJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id", nullable = false)
     private WarehouseJpaEntity warehouse;
@@ -40,10 +43,11 @@ public class WarehouseZoneJpaEntity {
                 warehouse, zone.getZoneCode(), zone.getZoneName(), zone.getZoneType()
         );
         entity.id = zone.getId();
+        entity.version = zone.getVersion();
         return entity;
     }
 
     public WarehouseZone toDomain() {
-        return WarehouseZone.reconstitute(id, zoneCode, zoneName, zoneType);
+        return WarehouseZone.reconstitute(id, zoneCode, zoneName, zoneType, version);
     }
 }

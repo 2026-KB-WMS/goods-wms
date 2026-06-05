@@ -19,6 +19,9 @@ public class MemberJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     private String name;
     private String email;
 
@@ -44,10 +47,11 @@ public class MemberJpaEntity {
                 member.getRole(), member.getStatus(), member.getCreatedAt()
         );
         entity.id = member.getId();
+        entity.version = member.getVersion();
         return entity;
     }
 
     public Member toDomain() {
-        return Member.reconstitute(id, name, email, role, status, createdAt);
+        return Member.reconstitute(id, name, email, role, status, createdAt, version);
     }
 }

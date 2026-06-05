@@ -19,6 +19,9 @@ public class ProductJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(unique = true, nullable = false)
     private String sku;
 
@@ -57,11 +60,12 @@ public class ProductJpaEntity {
                 product.getProductType(), product.getStatus(), product.getCreatedAt()
         );
         entity.id = product.getId();
+        entity.version = product.getVersion();
         return entity;
     }
 
     public Product toDomain() {
         return Product.reconstitute(id, sku, name, characterName, seriesName,
-                edition, limitedEdition, productType, status, createdAt);
+                edition, limitedEdition, productType, status, createdAt, version);
     }
 }
