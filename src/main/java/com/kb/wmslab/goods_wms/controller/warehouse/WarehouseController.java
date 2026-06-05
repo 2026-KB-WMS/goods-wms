@@ -5,6 +5,7 @@ import com.kb.wmslab.goods_wms.business.application.warehouse.WarehouseResult;
 import com.kb.wmslab.goods_wms.business.application.warehouse.WarehouseUseCase;
 import com.kb.wmslab.goods_wms.controller.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class WarehouseController {
     private final WarehouseUseCase warehouseUseCase;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<WarehouseResult>> create(@RequestBody WarehouseRequest.CreateWarehouseRequest request) {
+    public ResponseEntity<ApiResponse<WarehouseResult>> create(@Valid @RequestBody WarehouseRequest.CreateWarehouseRequest request) {
         WarehouseResult result = warehouseUseCase.createWarehouse(
                 new WarehouseCommand.CreateWarehouse(request.name(), request.address())
         );
@@ -28,7 +29,7 @@ public class WarehouseController {
     @PostMapping("/{id}/zones")
     public ResponseEntity<ApiResponse<WarehouseResult>> addZone(
             @PathVariable Long id,
-            @RequestBody WarehouseRequest.AddZoneRequest request) {
+            @Valid @RequestBody WarehouseRequest.AddZoneRequest request) {
         WarehouseResult result = warehouseUseCase.addZone(id,
                 new WarehouseCommand.AddZone(request.zoneCode(), request.zoneName(), request.zoneType())
         );

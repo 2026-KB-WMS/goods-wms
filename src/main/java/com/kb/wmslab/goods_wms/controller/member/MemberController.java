@@ -5,6 +5,7 @@ import com.kb.wmslab.goods_wms.business.application.member.MemberResult;
 import com.kb.wmslab.goods_wms.business.application.member.MemberUseCase;
 import com.kb.wmslab.goods_wms.controller.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class MemberController {
     private final MemberUseCase memberUseCase;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MemberResult>> register(@RequestBody MemberRequest.RegisterRequest request) {
+    public ResponseEntity<ApiResponse<MemberResult>> register(@Valid @RequestBody MemberRequest.RegisterRequest request) {
         MemberResult result = memberUseCase.registerMember(
                 new MemberCommand.Register(request.name(), request.email(), request.role())
         );
@@ -40,7 +41,7 @@ public class MemberController {
     @PatchMapping("/{id}/role")
     public ResponseEntity<ApiResponse<MemberResult>> changeRole(
             @PathVariable Long id,
-            @RequestBody MemberRequest.ChangeRoleRequest request) {
+            @Valid @RequestBody MemberRequest.ChangeRoleRequest request) {
         MemberResult result = memberUseCase.changeRole(id,
                 new MemberCommand.ChangeRole(request.newRole())
         );

@@ -4,6 +4,7 @@ import com.kb.wmslab.goods_wms.business.application.outbound.OutboundCommand;
 import com.kb.wmslab.goods_wms.business.application.outbound.OutboundResult;
 import com.kb.wmslab.goods_wms.business.application.outbound.OutboundUseCase;
 import com.kb.wmslab.goods_wms.controller.common.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class OutboundController {
     private final OutboundUseCase outboundUseCase;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<OutboundResult>> create(@RequestBody OutboundRequest.CreateOutboundRequest request) {
+    public ResponseEntity<ApiResponse<OutboundResult>> create(@Valid @RequestBody OutboundRequest.CreateOutboundRequest request) {
         OutboundResult result = outboundUseCase.createOutbound(
                 new OutboundCommand.CreateOutbound(request.warehouseId(), request.handlerId(), request.destination(), request.purpose())
         );
@@ -28,7 +29,7 @@ public class OutboundController {
     @PostMapping("/{id}/lines")
     public ResponseEntity<ApiResponse<OutboundResult>> addLine(
             @PathVariable Long id,
-            @RequestBody OutboundRequest.AddLineRequest request) {
+            @Valid @RequestBody OutboundRequest.AddLineRequest request) {
         OutboundResult result = outboundUseCase.addLine(id,
                 new OutboundCommand.AddLine(request.productId(), request.quantity())
         );
