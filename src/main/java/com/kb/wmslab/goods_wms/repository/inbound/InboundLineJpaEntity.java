@@ -15,6 +15,9 @@ public class InboundLineJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inbound_id", nullable = false)
     private InboundJpaEntity inbound;
@@ -45,11 +48,12 @@ public class InboundLineJpaEntity {
                 line.getPendingInspectionQuantity(), line.isInspected()
         );
         entity.id = line.getId();
+        entity.version = line.getVersion();
         return entity;
     }
 
     public InboundLine toDomain() {
         return InboundLine.reconstitute(id, productId, orderedQuantity,
-                normalQuantity, damagedQuantity, pendingInspectionQuantity, inspected);
+                normalQuantity, damagedQuantity, pendingInspectionQuantity, inspected, version);
     }
 }

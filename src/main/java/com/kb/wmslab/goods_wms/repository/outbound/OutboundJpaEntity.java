@@ -21,6 +21,9 @@ public class OutboundJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     private Long warehouseId;
     private Long handlerId;
     private String destination;
@@ -52,6 +55,7 @@ public class OutboundJpaEntity {
                 outbound.getPurpose(), outbound.getStatus(), outbound.getCreatedAt()
         );
         entity.id = outbound.getId();
+        entity.version = outbound.getVersion();
         outbound.getLines().forEach(line ->
                 entity.lines.add(OutboundLineJpaEntity.from(line, entity))
         );
@@ -62,7 +66,7 @@ public class OutboundJpaEntity {
         return Outbound.reconstitute(
                 id, warehouseId, handlerId, destination, purpose, status,
                 lines.stream().map(OutboundLineJpaEntity::toDomain).toList(),
-                createdAt
+                createdAt, version
         );
     }
 }

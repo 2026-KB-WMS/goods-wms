@@ -18,9 +18,10 @@ public class Inbound {
     private InboundStatus status;
     private final List<InboundLine> lines;
     private final LocalDateTime createdAt;
+    private final Long version;
 
     private Inbound(Long id, Long warehouseId, Long handlerId, String supplierName,
-                    InboundStatus status, List<InboundLine> lines, LocalDateTime createdAt) {
+                    InboundStatus status, List<InboundLine> lines, LocalDateTime createdAt, Long version) {
         this.id = id;
         this.warehouseId = warehouseId;
         this.handlerId = handlerId;
@@ -28,16 +29,18 @@ public class Inbound {
         this.status = status;
         this.lines = new ArrayList<>(lines);
         this.createdAt = createdAt;
+        this.version = version;
     }
 
     public static Inbound create(Long warehouseId, Long handlerId, String supplierName) {
         return new Inbound(null, warehouseId, handlerId, supplierName,
-                InboundStatus.CREATED, List.of(), LocalDateTime.now());
+                InboundStatus.CREATED, List.of(), LocalDateTime.now(), null);
     }
 
     public static Inbound reconstitute(Long id, Long warehouseId, Long handlerId, String supplierName,
-                                        InboundStatus status, List<InboundLine> lines, LocalDateTime createdAt) {
-        return new Inbound(id, warehouseId, handlerId, supplierName, status, lines, createdAt);
+                                        InboundStatus status, List<InboundLine> lines,
+                                        LocalDateTime createdAt, Long version) {
+        return new Inbound(id, warehouseId, handlerId, supplierName, status, lines, createdAt, version);
     }
 
     public void addLine(InboundLine line) {

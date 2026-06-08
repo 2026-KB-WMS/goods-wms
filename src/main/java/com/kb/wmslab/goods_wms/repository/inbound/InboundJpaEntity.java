@@ -20,6 +20,9 @@ public class InboundJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     private Long warehouseId;
     private Long handlerId;
     private String supplierName;
@@ -47,6 +50,7 @@ public class InboundJpaEntity {
                 inbound.getStatus(), inbound.getCreatedAt()
         );
         entity.id = inbound.getId();
+        entity.version = inbound.getVersion();
         inbound.getLines().forEach(line ->
                 entity.lines.add(InboundLineJpaEntity.from(line, entity))
         );
@@ -57,7 +61,7 @@ public class InboundJpaEntity {
         return Inbound.reconstitute(
                 id, warehouseId, handlerId, supplierName, status,
                 lines.stream().map(InboundLineJpaEntity::toDomain).toList(),
-                createdAt
+                createdAt, version
         );
     }
 }

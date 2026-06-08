@@ -20,6 +20,9 @@ public class WarehouseJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     private String name;
     private String address;
 
@@ -44,6 +47,7 @@ public class WarehouseJpaEntity {
                 warehouse.getStatus(), warehouse.getCreatedAt()
         );
         entity.id = warehouse.getId();
+        entity.version = warehouse.getVersion();
         warehouse.getZones().forEach(zone ->
                 entity.zones.add(WarehouseZoneJpaEntity.from(zone, entity))
         );
@@ -54,7 +58,7 @@ public class WarehouseJpaEntity {
         return Warehouse.reconstitute(
                 id, name, address, status,
                 zones.stream().map(WarehouseZoneJpaEntity::toDomain).toList(),
-                createdAt
+                createdAt, version
         );
     }
 }

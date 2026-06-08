@@ -16,6 +16,9 @@ public class InventoryJpaEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     private Long warehouseId;
     private Long zoneId;
     private Long productId;
@@ -43,11 +46,12 @@ public class InventoryJpaEntity {
                 inventory.getPendingInspectionQuantity(), inventory.getReservedQuantity()
         );
         entity.id = inventory.getId();
+        entity.version = inventory.getVersion();
         return entity;
     }
 
     public Inventory toDomain() {
         return Inventory.reconstitute(id, warehouseId, zoneId, productId,
-                normalQuantity, damagedQuantity, pendingInspectionQuantity, reservedQuantity);
+                normalQuantity, damagedQuantity, pendingInspectionQuantity, reservedQuantity, version);
     }
 }
