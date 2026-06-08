@@ -26,6 +26,12 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     }
 
     @Override
+    public Optional<Inventory> findByWarehouseIdAndZoneIdAndProductIdForUpdate(Long warehouseId, Long zoneId, Long productId) {
+        return jpaRepository.findByWarehouseIdAndZoneIdAndProductIdWithLock(warehouseId, zoneId, productId)
+                .map(InventoryJpaEntity::toDomain);
+    }
+
+    @Override
     public List<Inventory> findAllByWarehouseId(Long warehouseId) {
         return jpaRepository.findAllByWarehouseId(warehouseId).stream()
                 .map(InventoryJpaEntity::toDomain)
