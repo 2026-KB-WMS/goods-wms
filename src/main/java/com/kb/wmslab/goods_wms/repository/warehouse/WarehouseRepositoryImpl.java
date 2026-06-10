@@ -5,6 +5,7 @@ import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,5 +22,12 @@ public class WarehouseRepositoryImpl implements WarehouseRepository {
     @Override
     public Optional<Warehouse> findById(Long id) {
         return jpaRepository.findById(id).map(WarehouseJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<Warehouse> findAll() {
+        return jpaRepository.findAll().stream()
+                .map(WarehouseJpaEntity::toDomain)
+                .toList();
     }
 }
