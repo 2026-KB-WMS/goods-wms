@@ -136,7 +136,7 @@ public class InboundService implements InboundUseCase {
     }
 
     private Inventory findOrCreateInventory(Long warehouseId, Long zoneId, Long productId) {
-        return inventoryRepository.findByWarehouseIdAndZoneIdAndProductId(warehouseId, zoneId, productId)
+        return inventoryRepository.findByWarehouseIdAndZoneIdAndProductIdForUpdate(warehouseId, zoneId, productId)
                 .orElseGet(() -> Inventory.create(warehouseId, zoneId, productId));
     }
 

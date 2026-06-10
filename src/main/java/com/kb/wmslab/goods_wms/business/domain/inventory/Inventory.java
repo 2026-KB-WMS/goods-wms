@@ -19,11 +19,10 @@ public class Inventory {
     private int damagedQuantity;
     private int pendingInspectionQuantity;
     private int reservedQuantity;
-    private final Long version;
 
     private Inventory(Long id, Long warehouseId, Long zoneId, Long productId,
                       int normalQuantity, int damagedQuantity,
-                      int pendingInspectionQuantity, int reservedQuantity, Long version) {
+                      int pendingInspectionQuantity, int reservedQuantity) {
         this.id = id;
         this.warehouseId = warehouseId;
         this.zoneId = zoneId;
@@ -32,18 +31,17 @@ public class Inventory {
         this.damagedQuantity = damagedQuantity;
         this.pendingInspectionQuantity = pendingInspectionQuantity;
         this.reservedQuantity = reservedQuantity;
-        this.version = version;
     }
 
     public static Inventory create(Long warehouseId, Long zoneId, Long productId) {
-        return new Inventory(null, warehouseId, zoneId, productId, 0, 0, 0, 0, null);
+        return new Inventory(null, warehouseId, zoneId, productId, 0, 0, 0, 0);
     }
 
     public static Inventory reconstitute(Long id, Long warehouseId, Long zoneId, Long productId,
                                           int normalQuantity, int damagedQuantity,
-                                          int pendingInspectionQuantity, int reservedQuantity, Long version) {
+                                          int pendingInspectionQuantity, int reservedQuantity) {
         return new Inventory(id, warehouseId, zoneId, productId,
-                normalQuantity, damagedQuantity, pendingInspectionQuantity, reservedQuantity, version);
+                normalQuantity, damagedQuantity, pendingInspectionQuantity, reservedQuantity);
     }
 
     public int getAvailableQuantity() {

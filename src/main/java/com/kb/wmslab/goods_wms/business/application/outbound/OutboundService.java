@@ -63,7 +63,7 @@ public class OutboundService implements OutboundUseCase {
 
         for (OutboundLine line : outbound.getLines()) {
             Inventory inventory = inventoryRepository
-                    .findByWarehouseIdAndZoneIdAndProductId(outbound.getWarehouseId(), normalZoneId, line.getProductId())
+                    .findByWarehouseIdAndZoneIdAndProductIdForUpdate(outbound.getWarehouseId(), normalZoneId, line.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Inventory", line.getProductId()));
             inventory.reserve(line.getQuantity());
             inventoryRepository.save(inventory);
@@ -82,7 +82,7 @@ public class OutboundService implements OutboundUseCase {
 
         for (OutboundLine line : outbound.getLines()) {
             Inventory inventory = inventoryRepository
-                    .findByWarehouseIdAndZoneIdAndProductId(outbound.getWarehouseId(), normalZoneId, line.getProductId())
+                    .findByWarehouseIdAndZoneIdAndProductIdForUpdate(outbound.getWarehouseId(), normalZoneId, line.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Inventory", line.getProductId()));
             inventory.releaseReservation(line.getQuantity());
             inventory.decreaseNormal(line.getQuantity());
@@ -102,7 +102,7 @@ public class OutboundService implements OutboundUseCase {
             Long normalZoneId = findNormalZoneId(outbound.getWarehouseId());
             for (OutboundLine line : outbound.getLines()) {
                 inventoryRepository
-                        .findByWarehouseIdAndZoneIdAndProductId(outbound.getWarehouseId(), normalZoneId, line.getProductId())
+                        .findByWarehouseIdAndZoneIdAndProductIdForUpdate(outbound.getWarehouseId(), normalZoneId, line.getProductId())
                         .ifPresent(inv -> {
                             inv.releaseReservation(line.getQuantity());
                             inventoryRepository.save(inv);
