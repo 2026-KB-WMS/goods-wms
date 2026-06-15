@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/warehouses")
 @RequiredArgsConstructor
@@ -47,6 +49,12 @@ public class WarehouseController {
     public ResponseEntity<ApiResponse<WarehouseResult>> deactivate(@PathVariable Long id) {
         WarehouseResult result = warehouseUseCase.deactivateWarehouse(id);
         return ResponseEntity.ok(ApiResponse.ok(result, "창고가 비활성화되었습니다."));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<WarehouseResult>>> getAllWarehouses() {
+        List<WarehouseResult> result = warehouseUseCase.getAllWarehouses();
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @GetMapping("/{id}")
