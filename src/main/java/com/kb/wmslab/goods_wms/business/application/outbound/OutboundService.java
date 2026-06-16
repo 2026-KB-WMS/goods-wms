@@ -15,6 +15,8 @@ import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseRepository;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseZone;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.ZoneType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,10 @@ public class OutboundService implements OutboundUseCase {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "inventory", allEntries = true),
+            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
+    })
     public OutboundResult validateOutbound(Long outboundId) {
         Outbound outbound = findOutboundById(outboundId);
 
@@ -75,6 +81,10 @@ public class OutboundService implements OutboundUseCase {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "inventory", allEntries = true),
+            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
+    })
     public OutboundResult completeOutbound(Long outboundId) {
         Outbound outbound = findOutboundById(outboundId);
 
@@ -95,6 +105,10 @@ public class OutboundService implements OutboundUseCase {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "inventory", allEntries = true),
+            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
+    })
     public OutboundResult cancelOutbound(Long outboundId) {
         Outbound outbound = findOutboundById(outboundId);
 
