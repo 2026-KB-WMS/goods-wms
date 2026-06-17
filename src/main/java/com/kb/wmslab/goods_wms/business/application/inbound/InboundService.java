@@ -14,6 +14,8 @@ import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseRepository;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseZone;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.ZoneType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,10 @@ public class InboundService implements InboundUseCase {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "inventory", allEntries = true),
+            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
+    })
     public InboundResult completeInbound(Long inboundId) {
         Inbound inbound = findInboundById(inboundId);
         inbound.complete();

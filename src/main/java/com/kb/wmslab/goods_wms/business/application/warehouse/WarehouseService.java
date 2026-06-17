@@ -5,6 +5,9 @@ import com.kb.wmslab.goods_wms.business.domain.warehouse.Warehouse;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseRepository;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseZone;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,10 @@ public class WarehouseService implements WarehouseUseCase {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "warehouse", key = "#id"),
+            @CacheEvict(value = "warehouseAll", allEntries = true)
+    })
     public WarehouseResult activateWarehouse(Long id) {
         Warehouse warehouse = findById(id);
         warehouse.activate();
@@ -43,6 +50,10 @@ public class WarehouseService implements WarehouseUseCase {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "warehouse", key = "#id"),
+            @CacheEvict(value = "warehouseAll", allEntries = true)
+    })
     public WarehouseResult deactivateWarehouse(Long id) {
         Warehouse warehouse = findById(id);
         warehouse.deactivate();
@@ -50,11 +61,13 @@ public class WarehouseService implements WarehouseUseCase {
     }
 
     @Override
+    @Cacheable(value = "warehouse", key = "#id")
     public WarehouseResult getWarehouse(Long id) {
         return WarehouseResult.from(findById(id));
     }
 
     @Override
+    @Cacheable(value = "warehouseAll", key = "'all'")
     public List<WarehouseResult> getAllWarehouses() {
         return warehouseRepository.findAll().stream()
                 .map(WarehouseResult::from)
