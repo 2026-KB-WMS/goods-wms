@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,6 @@ public class InventoryService implements InventoryUseCase {
     public List<InventoryResult> getInventoriesByWarehouse(Long warehouseId) {
         return inventoryRepository.findAllByWarehouseId(warehouseId).stream()
                 .map(InventoryResult::from)
-                .toList();
+                .collect(Collectors.toList());
     }
 }
