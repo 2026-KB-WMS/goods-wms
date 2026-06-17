@@ -1,8 +1,11 @@
 package com.kb.wmslab.goods_wms.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -23,15 +26,22 @@ public class RedisConfig {
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("com.kb.wmslab.goods_wms")
+                .allowIfSubType("java.util")
+                .build();
+
+        RecordSupportingTypeResolver typeResolver =
+                new RecordSupportingTypeResolver(ObjectMapper.DefaultTyping.NON_FINAL, ptv);
+
+        StdTypeResolverBuilder resolverBuilder = typeResolver
+                .init(JsonTypeInfo.Id.CLASS, null)
+                .inclusion(JsonTypeInfo.As.WRAPPER_ARRAY);
+
         ObjectMapper objectMapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .activateDefaultTyping(
-                        BasicPolymorphicTypeValidator.builder()
-                                .allowIfSubType(Object.class)
-                                .build(),
-                        ObjectMapper.DefaultTyping.EVERYTHING
-                );
+                .setDefaultTyping(resolverBuilder);
 
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
