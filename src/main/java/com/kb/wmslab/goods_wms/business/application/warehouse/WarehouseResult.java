@@ -7,6 +7,7 @@ import com.kb.wmslab.goods_wms.business.domain.warehouse.ZoneType;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public record WarehouseResult(
         Long id, String name, String address, WarehouseStatus status,
@@ -21,7 +22,7 @@ public record WarehouseResult(
     public static WarehouseResult from(Warehouse warehouse) {
         return new WarehouseResult(
                 warehouse.getId(), warehouse.getName(), warehouse.getAddress(), warehouse.getStatus(),
-                warehouse.getZones().stream().map(ZoneResult::from).toList(),
+                warehouse.getZones().stream().map(ZoneResult::from).collect(Collectors.toList()),
                 warehouse.getCreatedAt()
         );
     }
