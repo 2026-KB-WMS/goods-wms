@@ -13,9 +13,8 @@ import com.kb.wmslab.goods_wms.business.domain.warehouse.Warehouse;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseRepository;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseZone;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.ZoneType;
+import com.kb.wmslab.goods_wms.config.InventoryCacheEvictor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +30,7 @@ public class InboundService implements InboundUseCase {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final InventoryRepository inventoryRepository;
+    private final InventoryCacheEvictor cacheEvictor;
 
     @Override
     @Transactional
@@ -79,10 +79,6 @@ public class InboundService implements InboundUseCase {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "inventory", allEntries = true),
-            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
-    })
     public InboundResult completeInbound(Long inboundId) {
         Inbound inbound = findInboundById(inboundId);
         inbound.complete();
@@ -101,7 +97,10 @@ public class InboundService implements InboundUseCase {
 
         for (InboundLine line : saved.getLines()) {
             applyInventory(inbound.getWarehouseId(), normalZoneId, damagedZoneId.orElse(normalZoneId), line);
+            cacheEvictor.evictInventoryEntry(inbound.getWarehouseId(), normalZoneId, line.getProductId());
+            damagedZoneId.ifPresent(dz -> cacheEvictor.evictInventoryEntry(inbound.getWarehouseId(), dz, line.getProductId()));
         }
+        cacheEvictor.evictInventoryByWarehouse(inbound.getWarehouseId());
 
         return InboundResult.from(saved);
     }
