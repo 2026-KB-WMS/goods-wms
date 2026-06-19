@@ -14,9 +14,8 @@ import com.kb.wmslab.goods_wms.business.domain.warehouse.Warehouse;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseRepository;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.WarehouseZone;
 import com.kb.wmslab.goods_wms.business.domain.warehouse.ZoneType;
+import com.kb.wmslab.goods_wms.config.InventoryCacheEvictor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +29,7 @@ public class OutboundService implements OutboundUseCase {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
     private final InventoryRepository inventoryRepository;
+    private final InventoryCacheEvictor cacheEvictor;
 
     @Override
     @Transactional
@@ -58,10 +58,6 @@ public class OutboundService implements OutboundUseCase {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "inventory", allEntries = true),
-            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
-    })
     public OutboundResult validateOutbound(Long outboundId) {
         Outbound outbound = findOutboundById(outboundId);
 
@@ -73,7 +69,9 @@ public class OutboundService implements OutboundUseCase {
                     .orElseThrow(() -> new EntityNotFoundException("Inventory", line.getProductId()));
             inventory.reserve(line.getQuantity());
             inventoryRepository.save(inventory);
+            cacheEvictor.evictInventoryEntry(outbound.getWarehouseId(), normalZoneId, line.getProductId());
         }
+        cacheEvictor.evictInventoryByWarehouse(outbound.getWarehouseId());
 
         outbound.validate();
         return OutboundResult.from(outboundRepository.save(outbound));
@@ -81,10 +79,6 @@ public class OutboundService implements OutboundUseCase {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "inventory", allEntries = true),
-            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
-    })
     public OutboundResult completeOutbound(Long outboundId) {
         Outbound outbound = findOutboundById(outboundId);
 
@@ -97,7 +91,9 @@ public class OutboundService implements OutboundUseCase {
             inventory.releaseReservation(line.getQuantity());
             inventory.decreaseNormal(line.getQuantity());
             inventoryRepository.save(inventory);
+            cacheEvictor.evictInventoryEntry(outbound.getWarehouseId(), normalZoneId, line.getProductId());
         }
+        cacheEvictor.evictInventoryByWarehouse(outbound.getWarehouseId());
 
         outbound.complete();
         return OutboundResult.from(outboundRepository.save(outbound));
@@ -105,10 +101,6 @@ public class OutboundService implements OutboundUseCase {
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "inventory", allEntries = true),
-            @CacheEvict(value = "inventoryByWarehouse", allEntries = true)
-    })
     public OutboundResult cancelOutbound(Long outboundId) {
         Outbound outbound = findOutboundById(outboundId);
 
@@ -121,7 +113,9 @@ public class OutboundService implements OutboundUseCase {
                             inv.releaseReservation(line.getQuantity());
                             inventoryRepository.save(inv);
                         });
+                cacheEvictor.evictInventoryEntry(outbound.getWarehouseId(), normalZoneId, line.getProductId());
             }
+            cacheEvictor.evictInventoryByWarehouse(outbound.getWarehouseId());
         }
 
         outbound.cancel();
