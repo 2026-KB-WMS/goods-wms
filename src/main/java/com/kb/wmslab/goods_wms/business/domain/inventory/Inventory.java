@@ -1,5 +1,6 @@
 package com.kb.wmslab.goods_wms.business.domain.inventory;
 
+import com.kb.wmslab.goods_wms.business.domain.common.exception.ExcessiveReservationReleaseException;
 import com.kb.wmslab.goods_wms.business.domain.common.exception.InsufficientStockException;
 import lombok.Getter;
 
@@ -78,6 +79,7 @@ public class Inventory {
 
     public void releaseReservation(int quantity) {
         if (quantity <= 0) throw new IllegalArgumentException(INVALID_RELEASE_QUANTITY);
-        this.reservedQuantity = Math.max(0, this.reservedQuantity - quantity);
+        if (this.reservedQuantity < quantity) throw new ExcessiveReservationReleaseException(quantity, this.reservedQuantity);
+        this.reservedQuantity -= quantity;
     }
 }
