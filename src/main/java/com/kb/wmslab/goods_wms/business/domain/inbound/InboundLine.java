@@ -1,5 +1,6 @@
 package com.kb.wmslab.goods_wms.business.domain.inbound;
 
+import com.kb.wmslab.goods_wms.business.domain.common.exception.InspectionQuantityMismatchException;
 import lombok.Getter;
 
 @Getter
@@ -40,8 +41,7 @@ public class InboundLine {
     public void recordInspectionResult(int normalQuantity, int damagedQuantity, int pendingInspectionQuantity) {
         int total = normalQuantity + damagedQuantity + pendingInspectionQuantity;
         if (total != orderedQuantity) {
-            throw new IllegalArgumentException(
-                    "검수 수량 합계(" + total + ")가 입고 수량(" + orderedQuantity + ")과 일치하지 않습니다.");
+            throw new InspectionQuantityMismatchException(total, orderedQuantity);
         }
         this.normalQuantity = normalQuantity;
         this.damagedQuantity = damagedQuantity;
