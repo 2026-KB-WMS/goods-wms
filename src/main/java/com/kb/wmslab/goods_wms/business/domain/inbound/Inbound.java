@@ -1,5 +1,7 @@
 package com.kb.wmslab.goods_wms.business.domain.inbound;
 
+import com.kb.wmslab.goods_wms.business.domain.common.exception.EmptyInboundLineException;
+import com.kb.wmslab.goods_wms.business.domain.common.exception.IncompleteInspectionException;
 import com.kb.wmslab.goods_wms.business.domain.common.exception.InvalidStatusTransitionException;
 import lombok.Getter;
 
@@ -55,7 +57,7 @@ public class Inbound {
             throw new InvalidStatusTransitionException(status.name(), InboundStatus.INSPECTING.name());
         }
         if (lines.isEmpty()) {
-            throw new IllegalStateException("입고 라인이 없으면 검수를 시작할 수 없습니다.");
+            throw new EmptyInboundLineException();
         }
         this.status = InboundStatus.INSPECTING;
     }
@@ -66,7 +68,7 @@ public class Inbound {
         }
         boolean allInspected = lines.stream().allMatch(InboundLine::isInspected);
         if (!allInspected) {
-            throw new IllegalStateException("모든 입고 라인의 검수가 완료되어야 입고를 완료할 수 있습니다.");
+            throw new IncompleteInspectionException();
         }
         this.status = InboundStatus.COMPLETED;
     }

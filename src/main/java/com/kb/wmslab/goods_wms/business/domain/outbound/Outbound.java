@@ -1,5 +1,6 @@
 package com.kb.wmslab.goods_wms.business.domain.outbound;
 
+import com.kb.wmslab.goods_wms.business.domain.common.exception.EmptyOutboundLineException;
 import com.kb.wmslab.goods_wms.business.domain.common.exception.InvalidStatusTransitionException;
 import lombok.Getter;
 
@@ -58,7 +59,7 @@ public class Outbound {
             throw new InvalidStatusTransitionException(status.name(), OutboundStatus.VALIDATED.name());
         }
         if (lines.isEmpty()) {
-            throw new IllegalStateException("출고 라인이 없으면 출고 요청을 검증할 수 없습니다.");
+            throw new EmptyOutboundLineException();
         }
         this.status = OutboundStatus.VALIDATED;
     }
