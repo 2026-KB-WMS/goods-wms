@@ -37,4 +37,24 @@ class OutboundLineTest {
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
+
+    @Nested
+    @DisplayName("OutboundLine zone 할당")
+    class AssignZone {
+
+        @Test
+        @DisplayName("신규 생성 시 zoneId는 null이다")
+        void newlyCreatedLineShouldHaveNullZoneId() {
+            OutboundLine line = OutboundLine.create(1L, 10);
+            assertThat(line.getZoneId()).isNull();
+        }
+
+        @Test
+        @DisplayName("assignZone 호출 시 zoneId가 설정된다")
+        void assignZoneShouldSetZoneId() {
+            OutboundLine line = OutboundLine.create(1L, 10);
+            line.assignZone(100L);
+            assertThat(line.getZoneId()).isEqualTo(100L);
+        }
+    }
 }
