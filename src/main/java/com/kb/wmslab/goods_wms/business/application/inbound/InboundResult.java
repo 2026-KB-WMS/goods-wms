@@ -13,13 +13,15 @@ public record InboundResult(
 ) {
     public record LineResult(
             Long id, Long productId, int orderedQuantity,
-            int normalQuantity, int damagedQuantity, int pendingInspectionQuantity, boolean inspected
+            int normalQuantity, int damagedQuantity, int pendingInspectionQuantity, boolean inspected,
+            Long normalZoneId, Long damagedZoneId
     ) {
         public static LineResult from(InboundLine line) {
             return new LineResult(
                     line.getId(), line.getProductId(), line.getOrderedQuantity(),
                     line.getNormalQuantity(), line.getDamagedQuantity(),
-                    line.getPendingInspectionQuantity(), line.isInspected()
+                    line.getPendingInspectionQuantity(), line.isInspected(),
+                    line.getNormalZoneId(), line.getDamagedZoneId()
             );
         }
     }
