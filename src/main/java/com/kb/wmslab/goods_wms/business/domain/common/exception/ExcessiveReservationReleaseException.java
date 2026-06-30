@@ -1,7 +1,10 @@
 package com.kb.wmslab.goods_wms.business.domain.common.exception;
 
+import com.kb.wmslab.goods_wms.controller.common.ErrorCode;
+
 public class ExcessiveReservationReleaseException extends DomainException {
     public ExcessiveReservationReleaseException(int requested, int reserved) {
-        super("해제 수량(" + requested + ")이 예약 수량(" + reserved + ")을 초과합니다.");
+        super(ErrorCode.EXCESSIVE_RESERVATION_RELEASE,
+                "해제 수량(" + requested + ")이 예약 수량(" + reserved + ")을 초과합니다.");
     }
 }

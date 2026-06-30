@@ -1,7 +1,9 @@
 package com.kb.wmslab.goods_wms.business.domain.common.exception;
 
+import com.kb.wmslab.goods_wms.controller.common.ErrorCode;
+
 public class InvalidStatusTransitionException extends DomainException {
     public InvalidStatusTransitionException(String from, String to) {
-        super("상태 전이 불가: " + from + " → " + to);
+        super(ErrorCode.INVALID_STATUS_TRANSITION, "상태 전이 불가: " + from + " → " + to);
     }
 }
