@@ -1,6 +1,7 @@
 package com.kb.wmslab.goods_wms.controller.common;
 
-import com.kb.wmslab.goods_wms.business.domain.common.exception.DomainException;
+import com.kb.wmslab.goods_wms.common.DomainException;
+import com.kb.wmslab.goods_wms.common.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

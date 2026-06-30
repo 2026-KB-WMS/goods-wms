@@ -1,6 +1,7 @@
 package com.kb.wmslab.goods_wms.business.domain.common.exception;
 
-import com.kb.wmslab.goods_wms.controller.common.ErrorCode;
+import com.kb.wmslab.goods_wms.common.DomainException;
+import com.kb.wmslab.goods_wms.common.ErrorCode;
 
 public class InspectionQuantityMismatchException extends DomainException {
     public InspectionQuantityMismatchException(int actualTotal, int orderedQuantity) {

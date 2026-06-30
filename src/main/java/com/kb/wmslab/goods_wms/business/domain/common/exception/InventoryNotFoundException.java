@@ -1,6 +1,7 @@
 package com.kb.wmslab.goods_wms.business.domain.common.exception;
 
-import com.kb.wmslab.goods_wms.controller.common.ErrorCode;
+import com.kb.wmslab.goods_wms.common.DomainException;
+import com.kb.wmslab.goods_wms.common.ErrorCode;
 
 public class InventoryNotFoundException extends DomainException {
     public InventoryNotFoundException(Long warehouseId, Long zoneId, Long productId) {

@@ -1,4 +1,4 @@
-package com.kb.wmslab.goods_wms.controller.common;
+package com.kb.wmslab.goods_wms.common;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

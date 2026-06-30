@@ -1,6 +1,5 @@
-package com.kb.wmslab.goods_wms.business.domain.common.exception;
+package com.kb.wmslab.goods_wms.common;
 
-import com.kb.wmslab.goods_wms.controller.common.ErrorCode;
 import lombok.Getter;
 
 @Getter
