@@ -68,4 +68,35 @@ class InboundLineTest {
             assertThat(line.isInspected()).isFalse();
         }
     }
+
+    @Nested
+    @DisplayName("InboundLine zone 분배")
+    class AssignZones {
+
+        @Test
+        @DisplayName("신규 생성 시 normalZoneId / damagedZoneId는 null이다")
+        void newlyCreatedLineShouldHaveNullZoneIds() {
+            InboundLine line = InboundLine.create(1L, 10);
+            assertThat(line.getNormalZoneId()).isNull();
+            assertThat(line.getDamagedZoneId()).isNull();
+        }
+
+        @Test
+        @DisplayName("assignZones 호출 시 normalZoneId / damagedZoneId가 설정된다")
+        void assignZonesShouldSetBothZoneIds() {
+            InboundLine line = InboundLine.create(1L, 10);
+            line.assignZones(100L, 200L);
+            assertThat(line.getNormalZoneId()).isEqualTo(100L);
+            assertThat(line.getDamagedZoneId()).isEqualTo(200L);
+        }
+
+        @Test
+        @DisplayName("DAMAGED zone이 없는 창고는 두 zoneId를 같은 값으로 설정한다")
+        void assignZonesShouldAllowSameZoneIdWhenDamagedZoneAbsent() {
+            InboundLine line = InboundLine.create(1L, 10);
+            line.assignZones(100L, 100L);
+            assertThat(line.getNormalZoneId()).isEqualTo(100L);
+            assertThat(line.getDamagedZoneId()).isEqualTo(100L);
+        }
+    }
 }

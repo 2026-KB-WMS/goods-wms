@@ -12,9 +12,9 @@ public record OutboundResult(
         Long id, Long warehouseId, Long handlerId, String destination,
         OutboundPurpose purpose, OutboundStatus status, List<LineResult> lines, LocalDateTime createdAt
 ) {
-    public record LineResult(Long id, Long productId, int quantity) {
+    public record LineResult(Long id, Long productId, int quantity, Long zoneId) {
         public static LineResult from(OutboundLine line) {
-            return new LineResult(line.getId(), line.getProductId(), line.getQuantity());
+            return new LineResult(line.getId(), line.getProductId(), line.getQuantity(), line.getZoneId());
         }
     }
 

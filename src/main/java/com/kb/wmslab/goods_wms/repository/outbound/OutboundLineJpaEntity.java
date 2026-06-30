@@ -24,21 +24,23 @@ public class OutboundLineJpaEntity {
 
     private Long productId;
     private int quantity;
+    private Long zoneId;
 
-    private OutboundLineJpaEntity(OutboundJpaEntity outbound, Long productId, int quantity) {
+    private OutboundLineJpaEntity(OutboundJpaEntity outbound, Long productId, int quantity, Long zoneId) {
         this.outbound = outbound;
         this.productId = productId;
         this.quantity = quantity;
+        this.zoneId = zoneId;
     }
 
     public static OutboundLineJpaEntity from(OutboundLine line, OutboundJpaEntity outbound) {
-        OutboundLineJpaEntity entity = new OutboundLineJpaEntity(outbound, line.getProductId(), line.getQuantity());
+        OutboundLineJpaEntity entity = new OutboundLineJpaEntity(outbound, line.getProductId(), line.getQuantity(), line.getZoneId());
         entity.id = line.getId();
         entity.version = line.getVersion();
         return entity;
     }
 
     public OutboundLine toDomain() {
-        return OutboundLine.reconstitute(id, productId, quantity, version);
+        return OutboundLine.reconstitute(id, productId, quantity, zoneId, version);
     }
 }

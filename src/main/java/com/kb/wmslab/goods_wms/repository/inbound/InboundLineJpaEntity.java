@@ -28,10 +28,13 @@ public class InboundLineJpaEntity {
     private int damagedQuantity;
     private int pendingInspectionQuantity;
     private boolean inspected;
+    private Long normalZoneId;
+    private Long damagedZoneId;
 
     private InboundLineJpaEntity(InboundJpaEntity inbound, Long productId, int orderedQuantity,
                                   int normalQuantity, int damagedQuantity,
-                                  int pendingInspectionQuantity, boolean inspected) {
+                                  int pendingInspectionQuantity, boolean inspected,
+                                  Long normalZoneId, Long damagedZoneId) {
         this.inbound = inbound;
         this.productId = productId;
         this.orderedQuantity = orderedQuantity;
@@ -39,13 +42,16 @@ public class InboundLineJpaEntity {
         this.damagedQuantity = damagedQuantity;
         this.pendingInspectionQuantity = pendingInspectionQuantity;
         this.inspected = inspected;
+        this.normalZoneId = normalZoneId;
+        this.damagedZoneId = damagedZoneId;
     }
 
     public static InboundLineJpaEntity from(InboundLine line, InboundJpaEntity inbound) {
         InboundLineJpaEntity entity = new InboundLineJpaEntity(
                 inbound, line.getProductId(), line.getOrderedQuantity(),
                 line.getNormalQuantity(), line.getDamagedQuantity(),
-                line.getPendingInspectionQuantity(), line.isInspected()
+                line.getPendingInspectionQuantity(), line.isInspected(),
+                line.getNormalZoneId(), line.getDamagedZoneId()
         );
         entity.id = line.getId();
         entity.version = line.getVersion();
@@ -54,6 +60,7 @@ public class InboundLineJpaEntity {
 
     public InboundLine toDomain() {
         return InboundLine.reconstitute(id, productId, orderedQuantity,
-                normalQuantity, damagedQuantity, pendingInspectionQuantity, inspected, version);
+                normalQuantity, damagedQuantity, pendingInspectionQuantity, inspected,
+                normalZoneId, damagedZoneId, version);
     }
 }

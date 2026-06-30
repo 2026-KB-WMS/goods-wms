@@ -69,6 +69,7 @@ public class OutboundService implements OutboundUseCase {
                     .orElseThrow(() -> new EntityNotFoundException("Inventory", line.getProductId()));
             inventory.reserve(line.getQuantity());
             inventoryRepository.save(inventory);
+            line.assignZone(normalZoneId);
             cacheEvictor.evictInventoryEntry(outbound.getWarehouseId(), normalZoneId, line.getProductId());
         }
         cacheEvictor.evictInventoryByWarehouse(outbound.getWarehouseId());

@@ -82,7 +82,6 @@ public class InboundService implements InboundUseCase {
     public InboundResult completeInbound(Long inboundId) {
         Inbound inbound = findInboundById(inboundId);
         inbound.complete();
-        Inbound saved = inboundRepository.save(inbound);
 
         Warehouse warehouse = findWarehouseById(inbound.getWarehouseId());
         Long normalZoneId = warehouse.getZones().stream()
@@ -94,9 +93,16 @@ public class InboundService implements InboundUseCase {
                 .filter(z -> z.getZoneType() == ZoneType.DAMAGED)
                 .findFirst()
                 .map(WarehouseZone::getId);
+        Long resolvedDamagedZoneId = damagedZoneId.orElse(normalZoneId);
+
+        for (InboundLine line : inbound.getLines()) {
+            line.assignZones(normalZoneId, resolvedDamagedZoneId);
+        }
+
+        Inbound saved = inboundRepository.save(inbound);
 
         for (InboundLine line : saved.getLines()) {
-            applyInventory(inbound.getWarehouseId(), normalZoneId, damagedZoneId.orElse(normalZoneId), line);
+            applyInventory(inbound.getWarehouseId(), normalZoneId, resolvedDamagedZoneId, line);
             cacheEvictor.evictInventoryEntry(inbound.getWarehouseId(), normalZoneId, line.getProductId());
             damagedZoneId.ifPresent(dz -> cacheEvictor.evictInventoryEntry(inbound.getWarehouseId(), dz, line.getProductId()));
         }
