@@ -1,6 +1,5 @@
 package com.kb.wmslab.goods_wms.controller.bulkinbound;
 
-import com.kb.wmslab.goods_wms.batch.bulkinbound.BulkInboundJobConfig;
 import com.kb.wmslab.goods_wms.controller.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -15,11 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/inbounds/bulk")
@@ -31,7 +28,7 @@ public class BulkInboundController {
     private final Job bulkInboundJob;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Map<String, Object>>> uploadBulkInbound(
+    public ResponseEntity<ApiResponse<BulkInboundUploadResponse>> uploadBulkInbound(
             @RequestPart("file") MultipartFile file,
             @RequestParam(name = "writerType", defaultValue = "jpa") String writerType,
             @RequestParam(name = "chunkSize", defaultValue = "1000") Integer chunkSize,
@@ -54,48 +51,20 @@ public class BulkInboundController {
         JobExecution execution = jobLauncher.run(bulkInboundJob, params);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(ApiResponse.ok(Map.of(
-                        "executionId", execution.getId(),
-                        "status", execution.getStatus().name(),
-                        "writerType", writerType,
-                        "chunkSize", chunkSize,
-                        "threadCount", threadCount,
-                        "filePath", tempFile.toAbsolutePath().toString()
-                ), "대량 입고 처리가 시작되었습니다."));
+                .body(ApiResponse.ok(
+                        BulkInboundUploadResponse.of(
+                                execution, writerType, chunkSize, threadCount,
+                                tempFile.toAbsolutePath().toString()),
+                        "대량 입고 처리가 시작되었습니다."
+                ));
     }
 
     @GetMapping("/jobs/{executionId}")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getJobExecution(@PathVariable Long executionId) {
+    public ResponseEntity<ApiResponse<BulkInboundJobStatusResponse>> getJobExecution(@PathVariable Long executionId) {
         JobExecution execution = jobExplorer.getJobExecution(executionId);
         if (execution == null) {
             throw new IllegalArgumentException("해당 executionId의 Job 실행 정보를 찾을 수 없습니다: " + executionId);
         }
-
-        long readCount = execution.getStepExecutions().stream()
-                .mapToLong(se -> se.getReadCount()).sum();
-        long writeCount = execution.getStepExecutions().stream()
-                .mapToLong(se -> se.getWriteCount()).sum();
-        long skipCount = execution.getStepExecutions().stream()
-                .mapToLong(se -> se.getSkipCount()).sum();
-        Long durationMs = null;
-        if (execution.getStartTime() != null && execution.getEndTime() != null) {
-            durationMs = java.time.Duration.between(execution.getStartTime(), execution.getEndTime()).toMillis();
-        }
-
-        java.util.LinkedHashMap<String, Object> body = new java.util.LinkedHashMap<>();
-        body.put("executionId", execution.getId());
-        body.put("status", execution.getStatus().name());
-        body.put("exitCode", execution.getExitStatus().getExitCode());
-        body.put("startTime", String.valueOf(execution.getStartTime()));
-        body.put("endTime", String.valueOf(execution.getEndTime()));
-        body.put("durationMs", durationMs);
-        body.put("readCount", readCount);
-        body.put("writeCount", writeCount);
-        body.put("skipCount", skipCount);
-        body.put("jobParameters", execution.getJobParameters().getParameters().entrySet().stream()
-                .collect(java.util.stream.Collectors.toMap(
-                        java.util.Map.Entry::getKey,
-                        e -> String.valueOf(e.getValue().getValue()))));
-        return ResponseEntity.ok(ApiResponse.ok(body));
+        return ResponseEntity.ok(ApiResponse.ok(BulkInboundJobStatusResponse.from(execution)));
     }
 }
