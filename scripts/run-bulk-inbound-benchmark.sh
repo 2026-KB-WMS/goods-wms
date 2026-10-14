@@ -22,9 +22,9 @@ set -euo pipefail
 
 CSV_PATH="${1:-/Users/byeonguk/Desktop/bulk-inbound-10k.csv}"
 BASE_URL="http://localhost:8080"
-DB_USER="app"
-DB_PASS="app1234"
-DB_NAME="goods-wms"
+DB_USER="DB유저명"
+DB_PASS="DB비밀번호"
+DB_NAME="DB이름"
 
 if [ ! -f "$CSV_PATH" ]; then
     echo "CSV 파일을 찾을 수 없습니다: $CSV_PATH" >&2
