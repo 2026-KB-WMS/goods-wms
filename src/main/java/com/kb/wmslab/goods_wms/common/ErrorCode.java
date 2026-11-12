@@ -24,6 +24,7 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
 
     OPTIMISTIC_LOCK_CONFLICT(HttpStatus.CONFLICT, "다른 요청이 이미 해당 데이터를 수정했습니다. 다시 시도해주세요."),
+    BULK_INBOUND_BUSY(HttpStatus.SERVICE_UNAVAILABLE, "대량 입고 처리 중입니다. 잠시 후 다시 시도해주세요."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
     private final HttpStatus status;

@@ -1,7 +1,7 @@
 # Goods WMS 작업 규칙
 
 ## 프로젝트
-- 굿즈 창고 관리 시스템. Java 21, Spring Boot 3.5, Spring Batch, Spring Data JPA, MySQL 8, Redis 7.
+- 굿즈 창고 관리 시스템. Java 21, Spring Boot 3.5, Spring Batch, Spring Data JPA, MySQL 9.4 (로컬은 Docker, localhost:3307), Redis 7.
 - 테스트는 H2로 돈다(`src/test/resources/application.properties`).
 - `src/main/resources/application.properties`는 민감한 설정이라 .gitignore 대상이다. 내용을 출력하거나 커밋하지 않는다.
 

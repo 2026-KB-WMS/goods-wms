@@ -2,8 +2,10 @@ package com.kb.wmslab.goods_wms.controller.common;
 
 import com.kb.wmslab.goods_wms.common.DomainException;
 import com.kb.wmslab.goods_wms.common.ErrorCode;
+import com.kb.wmslab.goods_wms.controller.bulkinbound.BulkInboundBusyException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -73,6 +75,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleOptimisticLocking(ObjectOptimisticLockingFailureException e, HttpServletRequest req) {
         log4xx(ErrorCode.OPTIMISTIC_LOCK_CONFLICT, e, req);
         return build(ErrorCode.OPTIMISTIC_LOCK_CONFLICT, null, req);
+    }
+
+    @ExceptionHandler(BulkInboundBusyException.class)
+    public ResponseEntity<ErrorResponse> handleBulkInboundBusy(BulkInboundBusyException e, HttpServletRequest req) {
+        ErrorCode code = ErrorCode.BULK_INBOUND_BUSY;
+        log4xx(code, e, req);
+        ErrorResponse body = ErrorResponse.of(code, null, req.getRequestURI());
+        return ResponseEntity.status(code.getStatus())
+                .header(HttpHeaders.RETRY_AFTER, "5")
+                .body(body);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

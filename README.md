@@ -18,7 +18,7 @@
 |---|---|
 | Language | Java 21 |
 | Framework | Spring Boot 3.5, Spring Data JPA, Spring Batch, Spring Cache |
-| Database | MySQL 8 |
+| Database | MySQL 9.4 (로컬 확인 환경: Docker `mysql:latest`, 측정 시점 9.4.0, 포트 3307) |
 | Cache | Redis 7 |
 | API 문서화 | springdoc-openapi (Swagger UI) |
 | Test | JUnit 5, AssertJ |
@@ -149,8 +149,8 @@ BulkInboundJob
 
 | Endpoint | 설명 |
 |---|---|
-| `POST /inbounds/bulk` | CSV 업로드 + Job 실행 |
-| `GET /inbounds/bulk/jobs/{executionId}` | 실행 상태, durationMs, read/write/skip 카운트 조회 |
+| `POST /inbounds/bulk` | CSV 업로드 접수. 성공 시 **202 Accepted** + `executionId`를 즉시 반환하고 Job은 전용 풀에서 비동기 실행된다(응답 바디의 `status`는 접수 시점 값이라 `STARTING`/`STARTED`일 수 있다). 동시 처리 포화 시 **503 Service Unavailable** + `Retry-After: 5`. |
+| `GET /inbounds/bulk/jobs/{executionId}` | 실행 상태, `durationMs`, read/write/skip 카운트 조회. `COMPLETED` / `FAILED` / `STOPPED` / `ABANDONED` 중 하나가 될 때까지 폴링한다. |
 
 ### 4. 도메인 단위 테스트
 
@@ -219,7 +219,7 @@ JDBC Bulk insert / 멀티스레드 조합이 가장 안정적이며, INSERT 방�
 
 ### 사전 조건
 
-**MySQL 8**
+**MySQL 9.4** (로컬 확인 환경: Docker `mysql:latest`, 측정 시점 9.4.0, 포트 3307)
 
 ```sql
 CREATE DATABASE `goods-wms`;
@@ -251,7 +251,9 @@ http://localhost:8080/swagger-ui/index.html
 
 ```bash
 ./scripts/generate-bulk-inbound-csv.sh 100000 ~/Desktop/bulk-inbound-100k.csv
-./scripts/run-bulk-inbound-benchmark.sh ~/Desktop/bulk-inbound-100k.csv
+DB_USER=<앱 DB 사용자> DB_PASS=<비밀번호> DB_NAME=<DB 이름> \
+DB_HOST=<호스트> DB_PORT=<포트> \
+  ./scripts/run-bulk-inbound-benchmark.sh ~/Desktop/bulk-inbound-100k.csv
 ```
 
 ---
